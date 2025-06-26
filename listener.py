@@ -5,4 +5,4 @@ class Listener:
         self.port = port
     
     def listen(self):
-        pass
+        print(f"listening {self.url} on port {self.port}...")
