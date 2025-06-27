@@ -1,6 +1,6 @@
 import os
 import pytest
-from storage.sqlite_store import SQLiteStockStore
+from storage.stock_store_factory import get_stock_store
 from models.stock import Stock
 
 TEST_DB_PATH = "test_data/test_stock.db"
@@ -14,7 +14,7 @@ def store():
     if os.path.exists(TEST_DB_PATH):
         os.remove(TEST_DB_PATH)
     
-    return SQLiteStockStore(TEST_DB_PATH)
+    return get_stock_store("sqlite", db_path=TEST_DB_PATH)
 
 def test_save_and_load_stock_price(store):
     s = Stock(symbol="^GSPC", price=5500.00)
