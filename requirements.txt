@@ -1,2 +1,4 @@
 yfinance
 pytest
+httpx
+python-dotenv
