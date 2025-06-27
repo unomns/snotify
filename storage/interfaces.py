@@ -23,7 +23,7 @@ class UserStore(ABC):
         pass
 
 
-class DriverInterface(ABC):
+class DatabaseDriverInterface(ABC):
     user_store: UserStore
     stock_store: StockStore
 

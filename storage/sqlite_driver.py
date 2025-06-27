@@ -2,9 +2,9 @@ import sqlite3
 from storage.schema import create_all
 from storage.sqlite_user_store import SqliteUserStore
 from storage.sqlite_stock_store import SqliteStockStore
-from storage.interfaces import DriverInterface
+from storage.interfaces import DatabaseDriverInterface
 
-class SqliteDriver(DriverInterface):
+class SqliteDriver(DatabaseDriverInterface):
     def __init__(self, db_path: str):
         self.conn = sqlite3.connect(db_path)
         self.conn.row_factory = sqlite3.Row
