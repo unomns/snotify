@@ -1,7 +1,6 @@
 import os
 import pytest
-from storage.user_store import UserStore
-from storage.schema import create_all
+from storage.stock_store_factory import get_db_storage
 
 
 TEST_DB_PATH = "test_data/test_users.db"
@@ -12,10 +11,8 @@ def user_store():
     if os.path.exists(TEST_DB_PATH):
         os.remove(TEST_DB_PATH)
 
-    from sqlite3 import connect
-    conn = connect(TEST_DB_PATH)
-    create_all(conn)
-    return UserStore(conn)
+    return get_db_storage("sqlite", db_path=TEST_DB_PATH).user_store
+
 
 def test_add_and_get_user(user_store):
     chat_id = "1234567"

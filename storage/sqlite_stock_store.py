@@ -3,14 +3,11 @@ from typing import Optional
 from models.stock import Stock
 from datetime import datetime
 from storage.interfaces import StockStore
-from storage.schema import create_all
 
 
 class SqliteStockStore(StockStore):
-    def __init__(self, db_path: str):
-        self.conn = sqlite3.connect(db_path)
-        self.conn.row_factory = sqlite3.Row
-        create_all(self.conn)
+    def __init__(self, conn: sqlite3.Connection):
+        self.conn = conn
 
     def save_price(self, s: Stock):
         with self.conn:

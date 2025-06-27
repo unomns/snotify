@@ -1,9 +1,9 @@
-from storage.sqlite_stock_store import SqliteStockStore
-from storage.interfaces import StockStore
+from storage.sqlite_driver import SqliteDriver
+from storage.interfaces import DriverInterface
 
 
-def get_stock_store(driver: str, **kwards) -> StockStore:
+def get_db_storage(driver: str, **kwards) -> DriverInterface:
     if driver == "sqlite":
-        return SqliteStockStore(kwards["db_path"])
+        return SqliteDriver(kwards["db_path"])
 
     raise NotImplementedError(f"Drive `{driver}` is not supported")

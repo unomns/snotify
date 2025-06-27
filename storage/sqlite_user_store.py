@@ -4,10 +4,9 @@ from datetime import datetime
 import sqlite3
 
 
-class UserStore:
+class SqliteUserStore:
     def __init__(self, conn: sqlite3.Connection):
         self.conn = conn
-        self.conn.row_factory = sqlite3.Row
 
     def add_user(self, chat_id: str) -> None:
         with self.conn:
