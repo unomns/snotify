@@ -1,8 +1,8 @@
-import config
-from listener import Listener
+from services.fetcher import StockFetcher
 
 def main():
-    l = Listener(config.STOCK_URL, config.STOCK_PORT)
-    l.listen()
+    l = StockFetcher()
+    price = l.get_current_price("^GSPC")
+    print(f"S&P500 price is: ${price}")
 
 main()
