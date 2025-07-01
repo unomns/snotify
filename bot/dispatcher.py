@@ -1,11 +1,19 @@
-import os
-from dotenv import load_dotenv
+import logging
 from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+from telegram.ext import CommandHandler, ContextTypes
 from storage.sqlite_driver import SqliteDriver
-from config import DB_PATH, TELEGRAM_BOT_TOKEN
+from config import DB_PATH
+from services.fetcher import StockFetcher
+
 
 driver = SqliteDriver(DB_PATH)
+fetcher = StockFetcher()
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+)
+logger = logging.getLogger(__name__)
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -35,11 +43,15 @@ async def track(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     driver.tracked_stock_store.track(user.id, symbol)
 
-    await context.bot.send_message(
-        chat_id=chat_id,
-        text=f"You're tracking: <b>{symbol}</b>",
-        parse_mode="HTML"
-    )
+    try:
+        price = fetcher.get_current_price(symbol)
+        message = f"✅ You're now tracking <b>{symbol}</b>\nCurrent price: $<b>{price}</b>"
+    except Exception as e:
+        logger.warning(
+            f"Track. Failed to fetch price for '{symbol}' (user {chat_id}): {e}")
+        message = f"✅ You're now tracking <b>{symbol}</b>\nPrice is currently unavailable."
+
+    await context.bot.send_message(chat_id=chat_id, text=message, parse_mode="HTML")
 
 
 async def untrack(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -78,25 +90,24 @@ async def list_tracked(update: Update, context: ContextTypes.DEFAULT_TYPE):
     tracked = driver.tracked_stock_store.list_tracked(user.id)
     if not tracked:
         await context.bot.send_message(chat_id=chat_id, text="You're not tracking any stocks yet.")
-    else:
-        lines = [f"- {ts.symbol}" for ts in tracked]
-        text = "You're tracking:\n" + "\n".join(lines)
-        await context.bot.send_message(chat_id=chat_id, text=text)
+        return
+
+    lines = []
+    for ts in tracked:
+        try:
+            price = fetcher.get_current_price(ts.symbol)
+            lines.append(f"- <b>{ts.symbol}</b>: ${price}")
+        except Exception as e:
+            logger.warning(
+                f"ListTracked. Failed to fetch price for '{ts.symbol}' (user {chat_id}): {e}")
+            lines.append(f"- <b>{ts.symbol}</b>: (price unavailable)")
+
+    text = "You're tracking:\n" + "\n".join(lines)
+    await context.bot.send_message(chat_id=chat_id, text=text, parse_mode="HTML")
 
 
-def main():
-    print(f"starting.. bot_token:{TELEGRAM_BOT_TOKEN}")
-    app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
-
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("track", track))
-    app.add_handler(CommandHandler("untrack", untrack))
-    app.add_handler(CommandHandler("list", list_tracked))
-
-    app.run_polling()
-
-
-if __name__ == "__main__":
-    main()
-
-# TODO: Add auto-reloading (watchdog)
+def register_handlers(application):
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("track", track))
+    application.add_handler(CommandHandler("untrack", untrack))
+    application.add_handler(CommandHandler("list", list_tracked))

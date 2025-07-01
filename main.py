@@ -1,15 +1,13 @@
-from services.fetcher import StockFetcher
-from services.notifier import TelegramNotifier
-import config
+from telegram.ext import ApplicationBuilder
+from bot.dispatcher import register_handlers
+from config import TELEGRAM_BOT_TOKEN
 
 
 def main():
-    l = StockFetcher()
-    price = l.get_current_price("^GSPC")
-    print(f"S&P500 price is: ${price}")
-
-    n = TelegramNotifier(config.TELEGRAM_BOT_TOKEN, config.TELEGRAM_CHAT_ID)
-    n.send("🚨 Price alert for AAPL: 150.00 → 152.75")
+    print(f"starting.. bot_token:{TELEGRAM_BOT_TOKEN}")
+    app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
+    register_handlers(app)
+    app.run_polling()
 
 
 main()

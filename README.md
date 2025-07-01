@@ -1,16 +1,20 @@
 # 📈 Snotify — Stock Notification service
 
-Snotify is a lightweight Telegram-based micro-SaaS that lets users subscribe to stock price changes and receive alerts directly via Telegram.
+**Snotify** is a lightweight Telegram-based stock tracker.  
+It lets users subscribe to stock symbols and instantly get the current price, all from a Telegram bot.
+
+> 🔒 This repo contains the **public core** of a real micro-SaaS project.
+> The private version includes production-grade orchestration and automated price monitoring.
 
 ---
 
 ## ✨ Features
 
 - ✅ Telegram bot integration
-- ✅ SQLite storage backend (MySQL-ready architecture)
+- ✅ SQLite backend (MySQL-ready driver-based architecture)
 - ✅ Per-user stock tracking
-- ✅ Price change detection
-- ✅ Telegram alerts on stock updates
+- ✅ Instant current price response on `/track` and `/list`
+- ✅ Clean, testable structure with interfaces and stores
 
 ---
 
@@ -26,7 +30,8 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 2. Create `.env`
+### 2. Create `.env` file
+
 ```env
 TELEGRAM_BOT_TOKEN=your_bot_token
 DB_PATH=data/app.db
@@ -37,10 +42,15 @@ DB_PATH=data/app.db
 make run
 ```
 
+> ℹ️ The bot will run in the foreground.
+
 ---
 
 ## 🛠️ Commands (Telegram)
 
-- `/start` → Register yourself as a user
-
-- `/track` SYMBOL → Begin tracking a stock (e.g. /track AAPL)
+| Command           | Description                                   |
+| ----------------- | --------------------------------------------- |
+| `/start`          | Register yourself as a user                   |
+| `/track SYMBOL`   | Start tracking a stock (e.g. `/track AAPL`)   |
+| `/untrack SYMBOL` | End tracking a stock (e.g. `/untrack AAPL`)   |
+| `/list`           | Show all your tracked stocks + current prices |

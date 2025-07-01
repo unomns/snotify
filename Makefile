@@ -1,6 +1,5 @@
 PYTHON=python
-BOT_SCRIPT=bot/main.py
-
+BOT_SCRIPT=main.py
 
 export PYTHONPATH := .
 
