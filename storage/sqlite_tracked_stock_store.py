@@ -17,7 +17,13 @@ class SqliteTrackedStockStore(TrackedStockStore):
             """, (user_id, symbol.upper()))
 
     def untrack(self, user_id: int, symbol: str) -> None:
-        pass
+        with self.conn:
+            self.conn.execute(
+                """
+                DELETE FROM tracked_stocks
+                WHERE user_id = ? AND symbol = ?
+                """, (user_id, symbol.upper())
+            )
 
     def list_tracked(self, user_id: int) -> List[TrackedStock]:
         cur = self.conn.cursor()

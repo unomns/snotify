@@ -42,6 +42,31 @@ async def track(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
+async def untrack(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    chat_id = str(update.effective_chat.id)
+    if len(context.args) != 1:
+        await context.bot.send_message(
+            chat_id=chat_id,
+            text="❗ Usage: /untrack SYMBOL"
+        )
+        return
+
+    symbol = context.args[0].upper()
+
+    user = driver.user_store.get_user_by_chat_id(chat_id=chat_id)
+    if user is None:
+        await context.bot.send_message(chat_id=chat_id, text="Could not find your account. Try /start one more time.")
+        return
+
+    driver.tracked_stock_store.untrack(user.id, symbol)
+
+    await context.bot.send_message(
+        chat_id=chat_id,
+        text=f"You are no longer tracking <b>{symbol}</b>",
+        parse_mode="HTML"
+    )
+
+
 async def list_tracked(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = str(update.effective_chat.id)
 
@@ -65,6 +90,7 @@ def main():
 
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("track", track))
+    app.add_handler(CommandHandler("untrack", untrack))
     app.add_handler(CommandHandler("list", list_tracked))
 
     app.run_polling()
