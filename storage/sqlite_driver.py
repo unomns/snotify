@@ -2,7 +2,9 @@ import sqlite3
 from storage.schema import create_all
 from storage.sqlite_user_store import SqliteUserStore
 from storage.sqlite_stock_store import SqliteStockStore
+from storage.sqlite_tracked_stock_store import SqliteTrackedStockStore
 from storage.interfaces import DatabaseDriverInterface
+
 
 class SqliteDriver(DatabaseDriverInterface):
     def __init__(self, db_path: str):
@@ -12,6 +14,7 @@ class SqliteDriver(DatabaseDriverInterface):
 
         self.user_store = SqliteUserStore(self.conn)
         self.stock_store = SqliteStockStore(self.conn)
+        self.tracked_stock_store = SqliteTrackedStockStore(self.conn)
 
     def close(self):
         self.conn.close()

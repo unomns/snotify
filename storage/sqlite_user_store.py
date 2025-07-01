@@ -1,10 +1,11 @@
 from typing import Optional
 from models.user import User
 from datetime import datetime
+from storage.interfaces import UserStore
 import sqlite3
 
 
-class SqliteUserStore:
+class SqliteUserStore(UserStore):
     def __init__(self, conn: sqlite3.Connection):
         self.conn = conn
 
