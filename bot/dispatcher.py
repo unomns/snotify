@@ -2,7 +2,7 @@ import logging
 from telegram import Update
 from telegram.ext import CommandHandler, ContextTypes
 from storage.sqlite_driver import SqliteDriver
-from config import DB_PATH
+from config.config import DB_PATH
 from services.fetcher import StockFetcher
 
 

@@ -1,6 +1,6 @@
 from telegram.ext import ApplicationBuilder
 from bot.dispatcher import register_handlers
-from config import TELEGRAM_BOT_TOKEN
+from config.config import TELEGRAM_BOT_TOKEN
 
 
 def main():
